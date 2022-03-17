@@ -9,9 +9,7 @@ struct MemTableRecord
 {
     char *key;
     size_t key_len;
-    size_t value_loc;
-    size_t value_len;
-    unsigned long long timestamp;
+    long long value_loc;
 };
 
 struct MemTable
@@ -22,11 +20,11 @@ struct MemTable
 
 struct MemTable *MemTable_new();
 
-struct MemTableRecord *MemTable_get(const struct MemTable *memtable, const char *key, const size_t key_len);
+struct MemTableRecord *MemTable_get(const struct MemTable *memtable, const char *key, size_t key_len);
 
-void MemTable_set(struct MemTable *memtable, char *key, size_t key_len, size_t value_loc, size_t value_len);
+void MemTable_set(struct MemTable *memtable, const char *key, size_t key_len, long long value_loc);
 
-void MemTable_delete(struct MemTable *memtable, char *key, size_t key_len);
+void MemTable_delete(struct MemTable *memtable, const char *key, size_t key_len);
 
 void MemTable_free(struct MemTable *memtable);
 
