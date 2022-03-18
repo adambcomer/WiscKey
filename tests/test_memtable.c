@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <strings.h>
+#include <string.h>
 
 #include "../src/include/memtable.h"
 

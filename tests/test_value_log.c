@@ -1,7 +1,8 @@
 #include <assert.h>
-#include <strings.h>
+#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #include "../src/include/value_log.h"
 
@@ -15,10 +16,14 @@
         char value_log_key[k_len];                                        \
         char value_log_value[v_len];                                      \
                                                                           \
-        fread(&value_log_key_len, sizeof(uint64_t), 1, file);             \
-        fread(&value_log_value_len, sizeof(uint64_t), 1, file);           \
-        fread(&value_log_key, sizeof(char), k_len, file);                 \
-        fread(&value_log_value, sizeof(char), v_len, file);               \
+        int res = fread(&value_log_key_len, sizeof(uint64_t), 1, file);   \
+        assert(res == 1);                                                 \
+        res = fread(&value_log_value_len, sizeof(uint64_t), 1, file);     \
+        assert(res == 1);                                                 \
+        res = fread(&value_log_key, sizeof(char), k_len, file);           \
+        assert(res == k_len);                                             \
+        res = fread(&value_log_value, sizeof(char), v_len, file);         \
+        assert(res == v_len);                                             \
                                                                           \
         assert(value_log_key_len == k_len);                               \
         assert(value_log_value_len == v_len);                             \
