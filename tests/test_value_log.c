@@ -133,6 +133,64 @@ void TestValueLog_get()
     remove(filename);
 }
 
+void TestValueLog_reload()
+{
+    char *filename = "value_log.data";
+
+    struct ValueLog *log = ValueLog_new(filename, 0, 0);
+
+    size_t pos1, pos2, pos3;
+
+    int res = ValueLog_append(log, &pos1, "apple", strlen("apple") + 1, "Apple Pie", strlen("Apple Pie") + 1);
+    assert(res == 0);
+
+    res = ValueLog_append(log, &pos2, "lime", strlen("lime") + 1, "Key Lime Pie", strlen("Key Lime Pie") + 1);
+    assert(res == 0);
+
+    res = ValueLog_append(log, &pos3, "cherry", strlen("cherry") + 1, "Cherry Pie", strlen("Cherry Pie") + 1);
+    assert(res == 0);
+
+    res = ValueLog_sync(log);
+    assert(res == 0);
+
+    size_t tail = log->tail;
+
+    ValueLog_free(log);
+
+    log = ValueLog_new(filename, 0, tail);
+
+    char *value;
+    size_t value_len;
+
+    res = ValueLog_get(log, &value, &value_len, pos1);
+    assert(res == 0);
+
+    assert(value_len == strlen("Apple Pie") + 1);
+    assert(memcmp(value, "Apple Pie", value_len) == 0);
+
+    free(value);
+
+    res = ValueLog_get(log, &value, &value_len, pos2);
+    assert(res == 0);
+
+    assert(value_len == strlen("Key Lime Pie") + 1);
+    assert(memcmp(value, "Key Lime Pie", value_len) == 0);
+
+    free(value);
+
+    res = ValueLog_get(log, &value, &value_len, pos3);
+    assert(res == 0);
+
+    assert(value_len == strlen("Cherry Pie") + 1);
+    assert(memcmp(value, "Cherry Pie", value_len) == 0);
+
+    free(value);
+
+    ValueLog_free(log);
+
+    remove(filename);
+}
+
 int main()
 {
     // New
@@ -143,6 +201,9 @@ int main()
 
     // Get
     TestValueLog_get();
+
+    // Reload
+    TestValueLog_reload();
 
     return 0;
 }

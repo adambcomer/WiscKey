@@ -6,7 +6,13 @@
 
 struct ValueLog *ValueLog_new(const char *filename, size_t head, size_t tail)
 {
-    FILE *file = fopen(filename, "w+");
+    char *mode = "w+";
+    if (access(filename, F_OK) == 0)
+    {
+        mode = "r+";
+    }
+
+    FILE *file = fopen(filename, mode);
     if (file == NULL)
     {
         return NULL;
