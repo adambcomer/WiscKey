@@ -3,8 +3,7 @@
 
 #include "include/memtable.h"
 
-struct MemTableRecord *MemTableRecord_new(const char *key, size_t key_len, long long value_loc)
-{
+struct MemTableRecord *MemTableRecord_new(const char *key, size_t key_len, long long value_loc) {
     struct MemTableRecord *record = malloc(sizeof(struct MemTableRecord));
 
     record->key = malloc(key_len);
@@ -16,85 +15,67 @@ struct MemTableRecord *MemTableRecord_new(const char *key, size_t key_len, long 
     return record;
 }
 
-int MemTableRecord_key_cmp(const struct MemTableRecord *r, const char *key, size_t key_len)
-{
+int MemTableRecord_key_cmp(const struct MemTableRecord *r, const char *key, size_t key_len) {
     size_t len = r->key_len < key_len ? r->key_len : key_len;
 
     int cmp = memcmp(key, r->key, len);
-    if (cmp != 0 || r->key_len == key_len)
-    {
+    if (cmp != 0 || r->key_len == key_len) {
         return cmp;
     }
 
     return key_len < r->key_len ? -1 : 1;
 }
 
-struct MemTable *MemTable_new()
-{
+struct MemTable *MemTable_new() {
     struct MemTable *memtable = malloc(sizeof(struct MemTable));
     memtable->size = 0;
 
-    for (int i = 0; i < MEMTABLE_SIZE; i++)
-    {
+    for (int i = 0; i < MEMTABLE_SIZE; i++) {
         memtable->records[i] = NULL;
     }
 
     return memtable;
 }
 
-int MemTable_binary_search(const struct MemTable *memtable, const char *key, size_t key_len)
-{
-    if (memtable->size == 0)
-    {
+int MemTable_binary_search(const struct MemTable *memtable, const char *key, size_t key_len) {
+    if (memtable->size == 0) {
         return -1;
     }
 
     int a = 0;
-    int b = memtable->size - 1;
+    int b = (int) memtable->size - 1;
 
-    while (a < b)
-    {
+    while (a < b) {
         int m = a + (b - a) / 2;
 
         int cmp = MemTableRecord_key_cmp(memtable->records[m], key, key_len);
-        if (cmp == 0)
-        {
+        if (cmp == 0) {
             return m;
-        }
-        else if (cmp < 0)
-        {
+        } else if (cmp < 0) {
             b = m - 1;
-        }
-        else
-        {
+        } else {
             a = m + 1;
         }
     }
 
     int cmp = MemTableRecord_key_cmp(memtable->records[a], key, key_len);
-    if (cmp == 0)
-    {
+    if (cmp == 0) {
         return a;
     }
     return -1;
 }
 
-unsigned int MemTable_insertion_point(const struct MemTable *memtable, const char *key, size_t key_len)
-{
+unsigned int MemTable_insertion_point(const struct MemTable *memtable, const char *key, size_t key_len) {
     int a = 0;
-    int b = memtable->size;
+    int b = (int) memtable->size;
 
-    while (a < b)
-    {
+    while (a < b) {
         int m = (a + b) / 2;
 
         int cmp = MemTableRecord_key_cmp(memtable->records[m], key, key_len);
-        if (cmp < 0)
-        {
+        if (cmp < 0) {
             b = m - 1;
-        }
-        else
-        {
+        } else {
             a = m + 1;
         }
     }
@@ -102,30 +83,26 @@ unsigned int MemTable_insertion_point(const struct MemTable *memtable, const cha
     return a;
 }
 
-struct MemTableRecord *MemTable_get(const struct MemTable *memtable, const char *key, size_t key_len)
-{
+struct MemTableRecord *MemTable_get(const struct MemTable *memtable, const char *key, size_t key_len) {
     int idx = MemTable_binary_search(memtable, key, key_len);
-    if (idx == -1)
-    {
+    if (idx == -1) {
         return NULL;
     }
 
     return memtable->records[idx];
 }
 
-void MemTable_set(struct MemTable *memtable, const char *key, size_t key_len, long long value_loc)
-{
+void MemTable_set(struct MemTable *memtable, const char *key, size_t key_len, long long value_loc) {
     int idx = MemTable_binary_search(memtable, key, key_len);
-    if (idx == -1)
-    {
+    if (idx == -1) {
         struct MemTableRecord *record = MemTableRecord_new(key, key_len, value_loc);
 
         unsigned int insert_idx = MemTable_insertion_point(memtable, key, key_len);
 
-        if (insert_idx < memtable->size)
-        {
+        if (insert_idx < memtable->size) {
             // Shift the array of records by one pointer;
-            memcpy(&(memtable->records[insert_idx + 1]), &memtable->records[insert_idx], sizeof(struct MemTableRecord *) * (memtable->size - insert_idx));
+            memmove(&memtable->records[insert_idx + 1], &memtable->records[insert_idx],
+                    sizeof(struct MemTableRecord *) * (memtable->size - insert_idx));
         }
 
         memtable->records[insert_idx] = record;
@@ -136,20 +113,18 @@ void MemTable_set(struct MemTable *memtable, const char *key, size_t key_len, lo
     memtable->records[idx]->value_loc = value_loc;
 }
 
-void MemTable_delete(struct MemTable *memtable, const char *key, size_t key_len)
-{
+void MemTable_delete(struct MemTable *memtable, const char *key, size_t key_len) {
     int idx = MemTable_binary_search(memtable, key, key_len);
 
-    if (idx == -1)
-    {
+    if (idx == -1) {
         struct MemTableRecord *record = MemTableRecord_new(key, key_len, -1);
 
         unsigned int insert_idx = MemTable_insertion_point(memtable, key, key_len);
 
-        if (insert_idx < memtable->size)
-        {
+        if (insert_idx < memtable->size) {
             // Shift the array of records by one pointer;
-            memcpy(&(memtable->records[insert_idx + 1]), &memtable->records[insert_idx], sizeof(struct MemTableRecord *) * (memtable->size - insert_idx));
+            memmove(&(memtable->records[insert_idx + 1]), &memtable->records[insert_idx],
+                    sizeof(struct MemTableRecord *) * (memtable->size - insert_idx));
         }
 
         memtable->records[insert_idx] = record;
@@ -160,11 +135,9 @@ void MemTable_delete(struct MemTable *memtable, const char *key, size_t key_len)
     memtable->records[idx]->value_loc = -1;
 }
 
-void MemTable_free(struct MemTable *memtable)
-{
+void MemTable_free(struct MemTable *memtable) {
     // Free the MemTableRecords and its char*
-    for (int i = 0; i < memtable->size; i++)
-    {
+    for (int i = 0; i < memtable->size; i++) {
         free(memtable->records[i]->key);
         free(memtable->records[i]);
     }

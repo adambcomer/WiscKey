@@ -6,35 +6,7 @@
 
 #include "../src/include/value_log.h"
 
-#define ValueLogEntry_key_value_assert(filename, pos, k, k_len, v, v_len) \
-    {                                                                     \
-        FILE *file = fopen(filename, "r");                                \
-        fseek(file, pos, SEEK_SET);                                       \
-                                                                          \
-        uint64_t value_log_key_len;                                       \
-        uint64_t value_log_value_len;                                     \
-        char value_log_key[k_len];                                        \
-        char value_log_value[v_len];                                      \
-                                                                          \
-        int res = fread(&value_log_key_len, sizeof(uint64_t), 1, file);   \
-        assert(res == 1);                                                 \
-        res = fread(&value_log_value_len, sizeof(uint64_t), 1, file);     \
-        assert(res == 1);                                                 \
-        res = fread(&value_log_key, sizeof(char), k_len, file);           \
-        assert(res == k_len);                                             \
-        res = fread(&value_log_value, sizeof(char), v_len, file);         \
-        assert(res == v_len);                                             \
-                                                                          \
-        assert(value_log_key_len == k_len);                               \
-        assert(value_log_value_len == v_len);                             \
-        assert(memcmp(value_log_key, k, k_len) == 0);                     \
-        assert(memcmp(value_log_value, v, v_len) == 0);                   \
-                                                                          \
-        fclose(file);                                                     \
-    }
-
-void TestValueLog_new()
-{
+void TestValueLog_new() {
     char *filename = "value_log.data";
 
     struct ValueLog *log = ValueLog_new(filename, 0, 128);
@@ -48,8 +20,7 @@ void TestValueLog_new()
     remove(filename);
 }
 
-void TestValueLog_append()
-{
+void TestValueLog_append() {
     char *filename = "value_log.data";
 
     struct ValueLog *log = ValueLog_new(filename, 0, 0);
@@ -66,7 +37,29 @@ void TestValueLog_append()
 
     assert(res == 0);
     assert(pos == 0);
-    ValueLogEntry_key_value_assert(filename, 0, key1, strlen(key1) + 1, value1, strlen(value1) + 1);
+
+    FILE *file = fopen(filename, "r");
+
+    {
+        uint64_t value_log_key_len;
+        uint64_t value_log_value_len;
+        char value_log_key[strlen(key1) + 1];
+        char value_log_value[strlen(value1) + 1];
+
+        size_t file_res = fread(&value_log_key_len, sizeof(uint64_t), 1, file);
+        assert(file_res == 1);
+        file_res = fread(&value_log_value_len, sizeof(uint64_t), 1, file);
+        assert(file_res == 1);
+        file_res = fread(&value_log_key, sizeof(char), strlen(key1) + 1, file);
+        assert(file_res == strlen(key1) + 1);
+        file_res = fread(&value_log_value, sizeof(char), strlen(value1) + 1, file);
+        assert(file_res == strlen(value1) + 1);
+
+        assert(value_log_key_len == strlen(key1) + 1);
+        assert(value_log_value_len == strlen(value1) + 1);
+        assert(memcmp(value_log_key, key1, strlen(key1) + 1) == 0);
+        assert(memcmp(value_log_value, value1, strlen(value1) + 1) == 0);
+    }
 
     char *key2 = "lime";
     char *value2 = "Key Lime Pie";
@@ -78,16 +71,60 @@ void TestValueLog_append()
 
     assert(res == 0);
     assert(pos == 32);
-    ValueLogEntry_key_value_assert(filename, 0, key1, strlen(key1) + 1, value1, strlen(value1) + 1);
-    ValueLogEntry_key_value_assert(filename, 32, key2, strlen(key2) + 1, value2, strlen(value2) + 1);
+
+    fseek(file, 0, SEEK_SET);
+
+    {
+        uint64_t value_log_key_len;
+        uint64_t value_log_value_len;
+        char value_log_key[strlen(key1) + 1];
+        char value_log_value[strlen(value1) + 1];
+
+        size_t file_res = fread(&value_log_key_len, sizeof(uint64_t), 1, file);
+        assert(file_res == 1);
+        file_res = fread(&value_log_value_len, sizeof(uint64_t), 1, file);
+        assert(file_res == 1);
+        file_res = fread(&value_log_key, sizeof(char), strlen(key1) + 1, file);
+        assert(file_res == strlen(key1) + 1);
+        file_res = fread(&value_log_value, sizeof(char), strlen(value1) + 1, file);
+        assert(file_res == strlen(value1) + 1);
+
+        assert(value_log_key_len == strlen(key1) + 1);
+        assert(value_log_value_len == strlen(value1) + 1);
+        assert(memcmp(value_log_key, key1, strlen(key1) + 1) == 0);
+        assert(memcmp(value_log_value, value1, strlen(value1) + 1) == 0);
+    }
+
+
+    {
+        uint64_t value_log_key_len;
+        uint64_t value_log_value_len;
+        char value_log_key[strlen(key2) + 1];
+        char value_log_value[strlen(value2) + 1];
+
+        size_t file_res = fread(&value_log_key_len, sizeof(uint64_t), 1, file);
+        assert(file_res == 1);
+        file_res = fread(&value_log_value_len, sizeof(uint64_t), 1, file);
+        assert(file_res == 1);
+        file_res = fread(&value_log_key, sizeof(char), strlen(key2) + 1, file);
+        assert(file_res == strlen(key2) + 1);
+        file_res = fread(&value_log_value, sizeof(char), strlen(value2) + 1, file);
+        assert(file_res == strlen(value2) + 1);
+
+        assert(value_log_key_len == strlen(key2) + 1);
+        assert(value_log_value_len == strlen(value2) + 1);
+        assert(memcmp(value_log_key, key2, strlen(key2) + 1) == 0);
+        assert(memcmp(value_log_value, value2, strlen(value2) + 1) == 0);
+    }
+
+    fclose(file);
 
     ValueLog_free(log);
 
     remove(filename);
 }
 
-void TestValueLog_get()
-{
+void TestValueLog_get() {
     char *filename = "value_log.data";
 
     struct ValueLog *log = ValueLog_new(filename, 0, 0);
@@ -138,8 +175,7 @@ void TestValueLog_get()
     remove(filename);
 }
 
-void TestValueLog_reload()
-{
+void TestValueLog_reload() {
     char *filename = "value_log.data";
 
     struct ValueLog *log = ValueLog_new(filename, 0, 0);
@@ -196,8 +232,7 @@ void TestValueLog_reload()
     remove(filename);
 }
 
-int main()
-{
+int main() {
     // New
     TestValueLog_new();
 

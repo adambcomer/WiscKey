@@ -5,15 +5,13 @@
 
 #define MEMTABLE_SIZE 1024
 
-struct MemTableRecord
-{
+struct MemTableRecord {
     char *key;
     size_t key_len;
     long long value_loc;
 };
 
-struct MemTable
-{
+struct MemTable {
     struct MemTableRecord *records[MEMTABLE_SIZE];
     unsigned int size;
 };

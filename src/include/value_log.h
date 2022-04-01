@@ -3,8 +3,7 @@
 #ifndef VALUE_LOG_H
 #define VALUE_LOG_H
 
-struct ValueLog
-{
+struct ValueLog {
     FILE *file;
     size_t head;
     size_t tail;
@@ -12,7 +11,8 @@ struct ValueLog
 
 struct ValueLog *ValueLog_new(const char *filename, size_t head, size_t tail);
 
-int ValueLog_append(struct ValueLog *log, size_t *pos, const char *key, size_t key_len, const char *value, size_t value_len);
+int ValueLog_append(struct ValueLog *log, size_t *pos, const char *key, size_t key_len, const char *value,
+                    size_t value_len);
 
 int ValueLog_get(const struct ValueLog *log, char **value, size_t *value_len, size_t value_loc);
 
