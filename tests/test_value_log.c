@@ -95,7 +95,6 @@ void TestValueLog_append() {
         assert(memcmp(value_log_value, value1, strlen(value1) + 1) == 0);
     }
 
-
     {
         uint64_t value_log_key_len;
         uint64_t value_log_value_len;

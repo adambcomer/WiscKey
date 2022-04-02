@@ -68,8 +68,8 @@ void TestMemTable_set_start() {
 void TestMemTable_set_end() {
     struct MemTable *m = MemTable_new();
 
-    char *key1 = strdup("apple");
-    char *value1 = strdup("Apple Pie");
+    char *key1 = "apple";
+    char *value1 = "Apple Pie";
     long long value1_offset = 0;
 
     MemTable_set(m, key1, strlen(key1) + 1, (long long) value1_offset);
@@ -80,8 +80,8 @@ void TestMemTable_set_end() {
     assert(memcmp(m->records[0]->key, key1, strlen(key1) + 1) == 0);
     assert(m->records[0]->value_loc == value1_offset);
 
-    char *key2 = strdup("cherry");
-    char *value2 = strdup("Cherry Pie");
+    char *key2 = "cherry";
+    char *value2 = "Cherry Pie";
     long long value2_offset = (long long) strlen(value1) + 1;
 
     MemTable_set(m, key2, strlen(key2) + 1, (long long) value2_offset);
@@ -96,7 +96,7 @@ void TestMemTable_set_end() {
     assert(memcmp(m->records[1]->key, key2, strlen(key2) + 1) == 0);
     assert(m->records[1]->value_loc == value2_offset);
 
-    char *key3 = strdup("lime");
+    char *key3 = "lime";
     long long value3_offset = (long long) strlen(value1) + 1 + (long long) strlen(value2) + 1;
 
     MemTable_set(m, key3, strlen(key3) + 1, (long long) value3_offset);
