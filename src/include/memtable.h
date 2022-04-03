@@ -24,7 +24,7 @@
 struct MemTableRecord {
     char *key;
     size_t key_len;
-    long long value_loc;
+    int64_t value_loc;
 };
 
 struct MemTable {
@@ -36,7 +36,7 @@ struct MemTable *MemTable_new();
 
 struct MemTableRecord *MemTable_get(const struct MemTable *memtable, const char *key, size_t key_len);
 
-void MemTable_set(struct MemTable *memtable, const char *key, size_t key_len, long long value_loc);
+void MemTable_set(struct MemTable *memtable, const char *key, size_t key_len, int64_t value_loc);
 
 void MemTable_delete(struct MemTable *memtable, const char *key, size_t key_len);
 

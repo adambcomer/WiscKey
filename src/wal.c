@@ -75,7 +75,7 @@ int WAL_load_memtable(struct WAL *wal, struct MemTable *memtable) {
     return 0;
 }
 
-int WAL_append(struct WAL *wal, const char *key, size_t key_len, long long value_loc) {
+int WAL_append(struct WAL *wal, const char *key, size_t key_len, int64_t value_loc) {
     uint64_t key_len_64 = key_len;
     int64_t value_loc_64 = value_loc;
 

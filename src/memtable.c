@@ -19,7 +19,7 @@
 
 #include "include/memtable.h"
 
-struct MemTableRecord *MemTableRecord_new(const char *key, size_t key_len, long long value_loc) {
+struct MemTableRecord *MemTableRecord_new(const char *key, size_t key_len, int64_t value_loc) {
     struct MemTableRecord *record = malloc(sizeof(struct MemTableRecord));
 
     record->key = malloc(key_len);
@@ -108,7 +108,7 @@ struct MemTableRecord *MemTable_get(const struct MemTable *memtable, const char 
     return memtable->records[idx];
 }
 
-void MemTable_set(struct MemTable *memtable, const char *key, size_t key_len, long long value_loc) {
+void MemTable_set(struct MemTable *memtable, const char *key, size_t key_len, int64_t value_loc) {
     int idx = MemTable_binary_search(memtable, key, key_len);
     if (idx == -1) {
         struct MemTableRecord *record = MemTableRecord_new(key, key_len, value_loc);
