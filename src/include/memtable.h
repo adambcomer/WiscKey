@@ -15,6 +15,7 @@
  */
 
 #include <stdlib.h>
+#include <stdint.h>
 
 #ifndef MEMTABLE_H
 #define MEMTABLE_H
@@ -29,7 +30,7 @@ struct MemTableRecord {
 
 struct MemTable {
     struct MemTableRecord *records[MEMTABLE_SIZE];
-    unsigned int size;
+    size_t size;
 };
 
 struct MemTable *MemTable_new();

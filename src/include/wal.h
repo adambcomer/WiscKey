@@ -15,6 +15,7 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
 
 #include "memtable.h"
 
