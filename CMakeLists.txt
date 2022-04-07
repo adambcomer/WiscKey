@@ -4,9 +4,9 @@ project(WiscKey VERSION 1.0.0 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 17)
 
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+# set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 
-add_library(wisckey SHARED src/wisckey.c src/memtable.c src/value_log.c src/wal.c)
+add_library(wisckey SHARED src/wisckey.c src/memtable.c src/value_log.c src/wal.c src/sstable.c)
 set_target_properties(wisckey PROPERTIES PUBLIC_HEADER src/include/wisckey.h)
 set_target_properties(wisckey PROPERTIES VERSION ${PROJECT_VERSION})
 

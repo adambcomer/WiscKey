@@ -10,3 +10,7 @@ add_test(NAME ValueLogTests COMMAND ValueLogTests)
 add_executable(WALTests test_wal.c)
 target_link_libraries(WALTests wisckey)
 add_test(NAME WALTests COMMAND WALTests)
+
+add_executable(SSTableTests test_sstable.c)
+target_link_libraries(SSTableTests wisckey)
+add_test(NAME SSTableTests COMMAND SSTableTests)
