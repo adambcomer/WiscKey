@@ -39,7 +39,7 @@ int SSTableRecord_read(struct SSTable *table, struct SSTableRecord *record, uint
         return -1;
     }
 
-    char table_key[key_len];
+    char *table_key = malloc(key_len);
     file_res = fread(table_key, sizeof(char), key_len, table->file);
     if (file_res != key_len) {
         return -1;
@@ -225,6 +225,7 @@ int64_t SSTable_get_value_loc(struct SSTable *table, char *key, size_t key_len) 
         SSTableRecord_read(table, &record, table->records[m]);
 
         int cmp = SSTable_key_cmp(&record, key, key_len);
+        free(record.key);
         if (cmp == 0) {
             return record.value_loc;
         } else if (cmp < 0) {
@@ -238,6 +239,7 @@ int64_t SSTable_get_value_loc(struct SSTable *table, char *key, size_t key_len) 
     SSTableRecord_read(table, &record, table->records[a]);
 
     int cmp = SSTable_key_cmp(&record, key, key_len);
+    free(record.key);
     if (cmp == 0) {
         return record.value_loc;
     }
