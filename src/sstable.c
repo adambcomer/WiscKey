@@ -22,26 +22,30 @@
 
 
 int SSTableRecord_read(struct SSTable *table, struct SSTableRecord *record, uint64_t offset) {
-    size_t file_res = fseeko(table->file, (long long) offset, SEEK_SET);
-    if (file_res != 0) {
+    int seek_res = fseeko(table->file, (long long) offset, SEEK_SET);
+    if (seek_res == -1) {
+        perror("fseeko");
         return -1;
     }
 
     uint64_t key_len;
-    file_res = fread(&key_len, sizeof(uint64_t), 1, table->file);
+    size_t file_res = fread(&key_len, sizeof(uint64_t), 1, table->file);
     if (file_res != 1) {
+        perror("fread");
         return -1;
     }
 
     int64_t val_loc;
     file_res = fread(&val_loc, sizeof(int64_t), 1, table->file);
     if (file_res != 1) {
+        perror("fread");
         return -1;
     }
 
     char *table_key = malloc(key_len);
     file_res = fread(table_key, sizeof(char), key_len, table->file);
     if (file_res != key_len) {
+        perror("fread");
         return -1;
     }
 
@@ -75,6 +79,7 @@ void SSTable_append_offset(struct SSTable *table, uint64_t offset) {
 struct SSTable *SSTable_new(char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
+        perror("fopen");
         return NULL;
     }
 
@@ -97,6 +102,7 @@ struct SSTable *SSTable_new(char *filename) {
         uint64_t key_len;
         size_t file_res = fread(&key_len, sizeof(uint64_t), 1, table->file);
         if (file_res != 1) {
+            perror("fread");
             return NULL;
         }
 
@@ -104,6 +110,7 @@ struct SSTable *SSTable_new(char *filename) {
 
         file_res = fseeko(table->file, (long long) next, SEEK_CUR);
         if (file_res != 0) {
+            perror("fread");
             return NULL;
         }
 
@@ -112,20 +119,23 @@ struct SSTable *SSTable_new(char *filename) {
         curr_offset += next + sizeof(uint64_t);
     }
 
-    size_t file_res = fseeko(table->file, (long long) table->records[0], SEEK_SET);
-    if (file_res != 0) {
+    int seek_res = fseeko(table->file, (long long) table->records[0], SEEK_SET);
+    if (seek_res == -1) {
+        perror("fseeko");
         return NULL;
     }
 
     uint64_t low_key_len;
-    file_res = fread(&low_key_len, sizeof(uint64_t), 1, table->file);
+    size_t file_res = fread(&low_key_len, sizeof(uint64_t), 1, table->file);
     if (file_res != 1) {
+        perror("fread");
         return NULL;
     }
 
     uint64_t val_loc;
     file_res = fread(&val_loc, sizeof(int64_t), 1, table->file);
     if (file_res != 1) {
+        perror("fread");
         return NULL;
     }
 
@@ -133,31 +143,36 @@ struct SSTable *SSTable_new(char *filename) {
     char *low_key = malloc(low_key_len);
     file_res = fread(low_key, sizeof(char), low_key_len, table->file);
     if (file_res != low_key_len) {
+        perror("fread");
         return NULL;
     }
 
     table->low_key = low_key;
     table->low_key_len = low_key_len;
 
-    file_res = fseeko(table->file, (long long) table->records[table->size - 1], SEEK_SET);
-    if (file_res != 0) {
+    seek_res = fseeko(table->file, (long long) table->records[table->size - 1], SEEK_SET);
+    if (seek_res == -1) {
+        perror("fseeko");
         return NULL;
     }
 
     uint64_t high_key_len;
     file_res = fread(&high_key_len, sizeof(uint64_t), 1, table->file);
     if (file_res != 1) {
+        perror("fread");
         return NULL;
     }
 
     file_res = fread(&val_loc, sizeof(int64_t), 1, table->file);
     if (file_res != 1) {
+        perror("fread");
         return NULL;
     }
 
     char *high_key = malloc(high_key_len);
     file_res = fread(high_key, sizeof(char), high_key_len, table->file);
     if (file_res != high_key_len) {
+        perror("fread");
         return NULL;
     }
 
@@ -170,6 +185,7 @@ struct SSTable *SSTable_new(char *filename) {
 struct SSTable *SSTable_new_from_memtable(char *filename, struct MemTable *memtable) {
     FILE *file = fopen(filename, "w+");
     if (file == NULL) {
+        perror("fopen");
         return NULL;
     }
 
@@ -179,21 +195,28 @@ struct SSTable *SSTable_new_from_memtable(char *filename, struct MemTable *memta
 
         size_t res = fwrite(&key_len, sizeof(uint64_t), 1, file);
         if (res != 1) {
+            perror("fwrite");
             return NULL;
         }
 
         res = fwrite(&value_loc, sizeof(int64_t), 1, file);
         if (res != 1) {
+            perror("fwrite");
             return NULL;
         }
 
         res = fwrite(memtable->records[i]->key, sizeof(char), key_len, file);
         if (res != key_len) {
+            perror("fwrite");
             return NULL;
         }
     }
 
-    fclose(file);
+    int res = fclose(file);
+    if (res == -1) {
+        perror("fclose");
+        return NULL;
+    }
 
     return SSTable_new(filename);
 }
@@ -236,7 +259,11 @@ int64_t SSTable_get_value_loc(struct SSTable *table, char *key, size_t key_len) 
     }
 
     struct SSTableRecord record;
-    SSTableRecord_read(table, &record, table->records[a]);
+    int res = SSTableRecord_read(table, &record, table->records[a]);
+    if (res == -1) {
+        perror("Error reading record from SSTable");
+        return -1;
+    }
 
     int cmp = SSTable_key_cmp(&record, key, key_len);
     free(record.key);
@@ -274,7 +301,10 @@ int SSTable_in_key_range(struct SSTable *table, char *key, size_t key_len) {
 }
 
 void SSTable_free(struct SSTable *table) {
-    fclose(table->file);
+    int res = fclose(table->file);
+    if (res == -1) {
+        perror("fclose");
+    }
 
     free(table->high_key);
     free(table->low_key);

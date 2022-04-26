@@ -29,6 +29,7 @@ struct ValueLog *ValueLog_new(const char *filename, size_t head, size_t tail) {
 
     FILE *file = fopen(filename, mode);
     if (file == NULL) {
+        perror("fopen");
         return NULL;
     }
 
@@ -45,6 +46,7 @@ int ValueLog_append(struct ValueLog *log, size_t *pos, const char *key, size_t k
                     size_t value_len) {
     int res = fseek(log->file, (long) log->head, SEEK_SET);
     if (res == -1) {
+        perror("fseek");
         return -1;
     }
 
@@ -53,18 +55,22 @@ int ValueLog_append(struct ValueLog *log, size_t *pos, const char *key, size_t k
 
     size_t b_written = fwrite(&key_len_64, sizeof(uint64_t), 1, log->file);
     if (b_written != 1) {
+        perror("fwrite");
         return -1;
     }
     b_written = fwrite(&value_len_64, sizeof(uint64_t), 1, log->file);
     if (b_written != 1) {
+        perror("fwrite");
         return -1;
     }
     b_written = fwrite(key, sizeof(char), key_len, log->file);
     if (b_written != key_len) {
+        perror("fwrite");
         return -1;
     }
     b_written = fwrite(value, sizeof(char), value_len, log->file);
     if (b_written != value_len) {
+        perror("fwrite");
         return -1;
     }
 
@@ -85,16 +91,19 @@ int ValueLog_get(const struct ValueLog *log, char **value, size_t *value_len, si
 
     size_t b_read = fread(&key_len_64, sizeof(uint64_t), 1, log->file);
     if (b_read != 1) {
+        perror("fread");
         return -1;
     }
 
     b_read = fread(&value_len_64, sizeof(uint64_t), 1, log->file);
     if (b_read != 1) {
+        perror("fread");
         return -1;
     }
 
     res = fseek(log->file, (long) key_len_64, SEEK_CUR);
     if (res == -1) {
+        perror("fseek");
         return -1;
     }
 
@@ -102,6 +111,7 @@ int ValueLog_get(const struct ValueLog *log, char **value, size_t *value_len, si
     *value_len = value_len_64;
     b_read = fread(*value, sizeof(char), value_len_64, log->file);
     if (b_read != value_len_64) {
+        perror("fread");
         return -1;
     }
 
@@ -110,19 +120,24 @@ int ValueLog_get(const struct ValueLog *log, char **value, size_t *value_len, si
 
 int ValueLog_sync(const struct ValueLog *log) {
     int res = fflush(log->file);
-    if (res != 0) {
+    if (res == EOF) {
+        perror("fflush");
         return -1;
     }
 
     res = fsync(fileno(log->file));
-    if (res < 0) {
+    if (res == -1) {
+        perror("fsync");
         return -1;
     }
     return 0;
 }
 
 void ValueLog_free(struct ValueLog *log) {
-    fclose(log->file);
+    int res = fclose(log->file);
+    if (res == -1) {
+        perror("fclose");
+    }
 
     free(log);
 }
