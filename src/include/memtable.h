@@ -17,8 +17,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#ifndef MEMTABLE_H
-#define MEMTABLE_H
+#ifndef WISCKEY_MEMTABLE_H
+#define WISCKEY_MEMTABLE_H
 
 #define MEMTABLE_SIZE 1024
 
@@ -43,4 +43,4 @@ void MemTable_delete(struct MemTable *memtable, const char *key, size_t key_len)
 
 void MemTable_free(struct MemTable *memtable);
 
-#endif /* MEMTABLE_H */
+#endif /* WISCKEY_MEMTABLE_H */

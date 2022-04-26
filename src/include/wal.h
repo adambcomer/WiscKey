@@ -19,8 +19,8 @@
 
 #include "memtable.h"
 
-#ifndef WAL_H
-#define WAL_H
+#ifndef WISCKEY_WAL_H
+#define WISCKEY_WAL_H
 
 struct WAL {
     FILE *file;
@@ -37,4 +37,4 @@ int WAL_sync(const struct WAL *wal);
 
 void WAL_free(struct WAL *wal);
 
-#endif /* WAL_H */
+#endif /* WISCKEY_WAL_H */

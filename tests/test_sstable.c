@@ -24,7 +24,7 @@
 
 
 void TestSSTable_new_from_memtable() {
-    char *filename = "test-sstable.data";
+    char *filename = "test-sstable.sstable";
 
     struct MemTable *memtable = MemTable_new();
 
@@ -60,7 +60,7 @@ void TestSSTable_new_from_memtable() {
 }
 
 void TestSSTable_new() {
-    char *filename = "test-sstable.data";
+    char *filename = "test-sstable.sstable";
 
     struct MemTable *memtable = MemTable_new();
 
@@ -101,7 +101,7 @@ void TestSSTable_new() {
 
 
 void TestSSTable_get_value_loc() {
-    char *filename = "test-sstable.data";
+    char *filename = "test-sstable.sstable";
 
     struct MemTable *memtable = MemTable_new();
 
@@ -148,7 +148,7 @@ void TestSSTable_get_value_loc() {
 }
 
 void TestSSTable_in_key_range() {
-    char *filename = "test-sstable.data";
+    char *filename = "test-sstable.sstable";
 
     struct MemTable *memtable = MemTable_new();
 

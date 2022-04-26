@@ -16,8 +16,8 @@
 
 #include <stdio.h>
 
-#ifndef VALUE_LOG_H
-#define VALUE_LOG_H
+#ifndef WISCKEY_VALUE_LOG_H
+#define WISCKEY_VALUE_LOG_H
 
 struct ValueLog {
     FILE *file;
@@ -36,4 +36,4 @@ int ValueLog_sync(const struct ValueLog *log);
 
 void ValueLog_free(struct ValueLog *log);
 
-#endif /* VALUE_LOG_H */
+#endif /* WISCKEY_VALUE_LOG_H */

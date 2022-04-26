@@ -19,12 +19,11 @@
 
 #include "memtable.h"
 
-#ifndef SSTABLE_H
-#define SSTABLE_H
+#ifndef WISCKEY_SSTABLE_H
+#define WISCKEY_SSTABLE_H
 
 #define SSTABLE_MIN_SIZE 1024
-
-#define SSTABLE_KEY_NOT_FOUND -2
+#define SSTABLE_KEY_NOT_FOUND (-2)
 
 struct SSTableRecord {
     char *key;
@@ -55,4 +54,4 @@ int SSTable_in_key_range(struct SSTable *table, char *key, size_t key_len);
 
 void SSTable_free(struct SSTable *table);
 
-#endif /* SSTABLE_H */
+#endif /* WISCKEY_SSTABLE_H */
