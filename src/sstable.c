@@ -76,15 +76,15 @@ void SSTable_append_offset(struct SSTable *table, uint64_t offset) {
     table->size += 1;
 }
 
-struct SSTable *SSTable_new(char *filename) {
-    FILE *file = fopen(filename, "r");
+struct SSTable *SSTable_new(char *path) {
+    FILE *file = fopen(path, "r");
     if (file == NULL) {
         perror("fopen");
         return NULL;
     }
 
     struct SSTable *table = malloc(sizeof(struct SSTable));
-    table->filename = filename;
+    table->path = path;
     table->file = file;
 
     table->records = malloc(SSTABLE_MIN_SIZE * sizeof(uint64_t));
@@ -182,8 +182,8 @@ struct SSTable *SSTable_new(char *filename) {
     return table;
 }
 
-struct SSTable *SSTable_new_from_memtable(char *filename, struct MemTable *memtable) {
-    FILE *file = fopen(filename, "w+");
+struct SSTable *SSTable_new_from_memtable(char *path, struct MemTable *memtable) {
+    FILE *file = fopen(path, "w+");
     if (file == NULL) {
         perror("fopen");
         return NULL;
@@ -218,7 +218,7 @@ struct SSTable *SSTable_new_from_memtable(char *filename, struct MemTable *memta
         return NULL;
     }
 
-    return SSTable_new(filename);
+    return SSTable_new(path);
 }
 
 

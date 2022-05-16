@@ -145,7 +145,12 @@ void TestWAL_load_memtable() {
     res = WAL_append(wal, key3, strlen(key3) + 1, -1);
     assert(res == 0);
 
+    // Simulate shutting down the database.
+    WAL_free(wal);
+
     struct MemTable *m = MemTable_new();
+
+    wal = WAL_new(filename);
 
     res = WAL_load_memtable(wal, m);
     assert(res == 0);

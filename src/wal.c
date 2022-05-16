@@ -22,8 +22,8 @@
 #include "include/wal.h"
 #include "include/memtable.h"
 
-struct WAL *WAL_new(char *filename) {
-    FILE *file = fopen(filename, "a+");
+struct WAL *WAL_new(char *path) {
+    FILE *file = fopen(path, "a+");
     if (file == NULL) {
         perror("fopen");
         return NULL;
@@ -31,7 +31,7 @@ struct WAL *WAL_new(char *filename) {
 
     struct WAL *wal = malloc(sizeof(struct WAL));
     wal->file = file;
-    wal->filename = filename;
+    wal->path = path;
 
     return wal;
 }

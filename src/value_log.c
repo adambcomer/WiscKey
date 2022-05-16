@@ -21,13 +21,13 @@
 
 #include "include/value_log.h"
 
-struct ValueLog *ValueLog_new(const char *filename, size_t head, size_t tail) {
+struct ValueLog *ValueLog_new(const char *path, size_t head, size_t tail) {
     char *mode = "w+";
-    if (access(filename, F_OK) == 0) {
+    if (access(path, F_OK) == 0) {
         mode = "r+";
     }
 
-    FILE *file = fopen(filename, mode);
+    FILE *file = fopen(path, mode);
     if (file == NULL) {
         perror("fopen");
         return NULL;

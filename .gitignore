@@ -4,4 +4,9 @@
 
 build
 cmake-build-debug
+cmake-build-release
 cmake-build-relwithdebinfo
+
+# Local Netlify folder
+.netlify
+docs/header.html
