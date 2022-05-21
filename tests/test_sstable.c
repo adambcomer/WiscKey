@@ -20,7 +20,6 @@
 #include <stdint.h>
 
 #include "../src/include/sstable.h"
-#include "../src/include/memtable.h"
 
 
 void TestSSTable_new_from_memtable() {

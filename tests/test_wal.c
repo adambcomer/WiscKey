@@ -19,7 +19,6 @@
 #include <stdint.h>
 
 #include "../src/include/wal.h"
-#include "../src/include/memtable.h"
 
 void TestWAL_new() {
     char *filename = "wal.data";
