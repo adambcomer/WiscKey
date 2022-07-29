@@ -6,6 +6,7 @@ build
 cmake-build-debug
 cmake-build-release
 cmake-build-relwithdebinfo
+cmake-build-addresssan
 
 # Local Netlify folder
 .netlify
