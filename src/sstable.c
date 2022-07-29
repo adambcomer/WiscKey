@@ -88,9 +88,9 @@ unsigned long SSTable_parse_level(char *filename) {
         }
         j += 1;
     }
-    char l[j - (i + 1)];
+    char l[j - i];
     memcpy(l, filename + i + 1, j - (i + 1));
-    l[i] = '\0';
+    l[j - (i + 1)] = '\0';
 
     return strtoul(l, NULL, 10);
 }
@@ -126,6 +126,8 @@ struct SSTable *SSTable_new(char *path) {
         perror("basename");
         return NULL;
     }
+
+    printf("%s\n", filename);
 
     struct SSTable *table = malloc(sizeof(struct SSTable));
     table->path = path;
