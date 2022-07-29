@@ -2,7 +2,13 @@ cmake_minimum_required(VERSION 3.10)
 
 project(WiscKey VERSION 1.0.0 LANGUAGES C)
 
+option(ASAN "Build with the Address Sanitizer" OFF)
+
 add_library(wisckey STATIC src/wisckey.c src/memtable.c src/value_log.c src/wal.c src/sstable.c)
+if(ASAN)
+    target_compile_options(wisckey PUBLIC -fsanitize=address -fno-omit-frame-pointer -g)
+    target_link_options(wisckey PUBLIC -fsanitize=address -fno-omit-frame-pointer -g)
+endif(ASAN)
 set_target_properties(wisckey PROPERTIES PUBLIC_HEADER src/include/wisckey.h)
 set_target_properties(wisckey PROPERTIES VERSION ${PROJECT_VERSION})
 
