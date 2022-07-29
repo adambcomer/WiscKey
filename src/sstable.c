@@ -127,8 +127,6 @@ struct SSTable *SSTable_new(char *path) {
         return NULL;
     }
 
-    printf("%s\n", filename);
-
     struct SSTable *table = malloc(sizeof(struct SSTable));
     table->path = path;
     table->file = file;
