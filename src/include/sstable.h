@@ -53,6 +53,8 @@ struct SSTableRecord {
  */
 struct SSTable {
     char *path; ///< Path of the SSTable on-disk.
+    unsigned long timestamp; ///< Creation timestamp in microseconds.
+    unsigned long level; ///< Compaction level.
     FILE *file; ///< File that the keys reside on.
     uint64_t *records; ///< In-memory index of the location of the keys. Growable array with size and capacity. Uses 8 bytes per key.
     size_t capacity; ///< Capacity of the growable in-memory index.
@@ -63,6 +65,26 @@ struct SSTable {
     char *high_key; ///< Highest key in the SSTable. Used to check if a key could possibly be in this SSTable.
     size_t high_key_len; ///< Length of the highest key.
 };
+
+/**
+ * @brief Parses the creation timestamp in microseconds from a SSTable filename.
+ *
+ * This function expects the filename in the format of `%ll-%ll.sstable`
+ *
+ * @param filename The filename of the SSTable to parse.
+ * @return The timestamp of when the SSTable was created.
+ */
+unsigned long SSTable_parse_timestamp(char *filename);
+
+/**
+ * @brief Parses the compaction level from a SSTable filename.
+ *
+ * This function expects the filename in the format of `%ll-%ll.sstable`
+ *
+ * @param filename The filename of the SSTable to parse.
+ * @return The compaction level of the SSTable.
+ */
+unsigned long SSTable_parse_level(char *filename);
 
 /**
  * @brief Loads a SSTable at a path.

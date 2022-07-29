@@ -23,7 +23,7 @@
 
 
 void TestSSTable_new_from_memtable() {
-    char *filename = "test-sstable.sstable";
+    char *path = "./123456789-1.sstable";
 
     struct MemTable *memtable = MemTable_new();
 
@@ -37,7 +37,7 @@ void TestSSTable_new_from_memtable() {
         MemTable_set(memtable, (const char *) &bytes, 4, i * 128);
     }
 
-    struct SSTable *table = SSTable_new_from_memtable(filename, memtable);
+    struct SSTable *table = SSTable_new_from_memtable(path, memtable);
 
     assert(table != NULL);
     assert(table->size == MEMTABLE_SIZE);
@@ -55,11 +55,11 @@ void TestSSTable_new_from_memtable() {
     MemTable_free(memtable);
     SSTable_free(table);
 
-    remove(filename);
+    remove(path);
 }
 
 void TestSSTable_new() {
-    char *filename = "test-sstable.sstable";
+    char *path = "./123456789-1.sstable";
 
     struct MemTable *memtable = MemTable_new();
 
@@ -73,14 +73,16 @@ void TestSSTable_new() {
         MemTable_set(memtable, (const char *) &bytes, 4, i * 128);
     }
 
-    struct SSTable *table = SSTable_new_from_memtable(filename, memtable);
+    struct SSTable *table = SSTable_new_from_memtable(path, memtable);
     assert(table != NULL);
     SSTable_free(table);
     MemTable_free(memtable);
 
-    struct SSTable *new_table = SSTable_new(filename);
+    struct SSTable *new_table = SSTable_new(path);
 
     assert(new_table != NULL);
+    assert(new_table->timestamp == 123456789);
+    assert(new_table->level == 1);
     assert(new_table->size == MEMTABLE_SIZE);
     assert(new_table->capacity == MEMTABLE_SIZE);
     for (int i = 0; i < new_table->size; i++) {
@@ -95,12 +97,12 @@ void TestSSTable_new() {
 
     SSTable_free(new_table);
 
-    remove(filename);
+    remove(path);
 }
 
 
 void TestSSTable_get_value_loc() {
-    char *filename = "test-sstable.sstable";
+    char *path = "./123456789-1.sstable";
 
     struct MemTable *memtable = MemTable_new();
 
@@ -114,7 +116,7 @@ void TestSSTable_get_value_loc() {
         MemTable_set(memtable, (const char *) &bytes, 4, i * 128);
     }
 
-    struct SSTable *table = SSTable_new_from_memtable(filename, memtable);
+    struct SSTable *table = SSTable_new_from_memtable(path, memtable);
     assert(table != NULL);
     MemTable_free(memtable);
 
@@ -143,11 +145,11 @@ void TestSSTable_get_value_loc() {
 
     SSTable_free(table);
 
-    remove(filename);
+    remove(path);
 }
 
 void TestSSTable_in_key_range() {
-    char *filename = "test-sstable.sstable";
+    char *path = "./123456789-1.sstable";
 
     struct MemTable *memtable = MemTable_new();
 
@@ -161,7 +163,7 @@ void TestSSTable_in_key_range() {
         MemTable_set(memtable, (const char *) &bytes, 4, i * 128);
     }
 
-    struct SSTable *table = SSTable_new_from_memtable(filename, memtable);
+    struct SSTable *table = SSTable_new_from_memtable(path, memtable);
     assert(table != NULL);
     MemTable_free(memtable);
 
@@ -190,7 +192,7 @@ void TestSSTable_in_key_range() {
 
     SSTable_free(table);
 
-    remove(filename);
+    remove(path);
 }
 
 int main() {

@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <libgen.h>
 
 #include "include/sstable.h"
 
@@ -56,6 +57,43 @@ int SSTableRecord_read(struct SSTable *table, struct SSTableRecord *record, uint
     return 0;
 }
 
+unsigned long SSTable_parse_timestamp(char *filename) {
+    int i = 0;
+    while (1) {
+        if (filename[i] == '-') {
+            break;
+        }
+        i += 1;
+    }
+    char t[i + 1];
+    memcpy(t, filename, i);
+    t[i] = '\0';
+
+    return strtoul(t, NULL, 10);
+}
+
+unsigned long SSTable_parse_level(char *filename) {
+    int i = 0;
+    while (1) {
+        if (filename[i] == '-') {
+            break;
+        }
+        i += 1;
+    }
+
+    int j = i + 1;
+    while (1) {
+        if (filename[j] == '.') {
+            break;
+        }
+        j += 1;
+    }
+    char l[j - (i + 1)];
+    memcpy(l, filename + i + 1, j - (i + 1));
+    l[i] = '\0';
+
+    return strtoul(l, NULL, 10);
+}
 
 void SSTable_append_offset(struct SSTable *table, uint64_t offset) {
     if (table->size < table->capacity) {
@@ -83,9 +121,18 @@ struct SSTable *SSTable_new(char *path) {
         return NULL;
     }
 
+    char* filename = basename(path);
+    if (filename == NULL) {
+        perror("basename");
+        return NULL;
+    }
+
     struct SSTable *table = malloc(sizeof(struct SSTable));
     table->path = path;
     table->file = file;
+
+    table->timestamp = SSTable_parse_timestamp(filename);
+    table->level = SSTable_parse_level(filename);
 
     table->records = malloc(SSTABLE_MIN_SIZE * sizeof(uint64_t));
     table->capacity = SSTABLE_MIN_SIZE;
@@ -274,7 +321,6 @@ int64_t SSTable_get_value_loc(struct SSTable *table, char *key, size_t key_len) 
 }
 
 int SSTable_in_key_range(struct SSTable *table, char *key, size_t key_len) {
-
     int low_key_cmp;
     int high_key_cmp;
 
