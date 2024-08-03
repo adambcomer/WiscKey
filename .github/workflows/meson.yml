@@ -1,0 +1,33 @@
+name: Meson
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses:  actions/setup-python@v5
+
+    - name: Dependencies
+      run: |
+        sudo apt-get install ninja-build
+        pip install meson
+
+    - name: Setup
+      run: make init 
+
+    - name: Clang-Format Check 
+      run: make format.check 
+
+    - name: Build
+      run: make build 
+
+    - name: Test
+      run: make test 
+      
