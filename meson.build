@@ -1,4 +1,4 @@
-project('WiscKey', 'c', default_options : ['c_std=c17'])
+project('WiscKey', 'c', default_options : ['c_std=gnu17'])
 
 ### Library ###
 include = include_directories('include')
