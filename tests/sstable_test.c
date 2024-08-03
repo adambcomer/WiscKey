@@ -43,7 +43,7 @@ TestSSTable_new_from_memtable()
   assert(table != NULL);
   assert(table->size == MEMTABLE_SIZE);
   assert(table->capacity == MEMTABLE_SIZE);
-  for (int i = 0; i < table->size; i++) {
+  for (size_t i = 0; i < table->size; i++) {
     assert(table->records[i] == i * 20);
   }
 
@@ -88,7 +88,7 @@ TestSSTable_new()
   assert(new_table->level == 1);
   assert(new_table->size == MEMTABLE_SIZE);
   assert(new_table->capacity == MEMTABLE_SIZE);
-  for (int i = 0; i < new_table->size; i++) {
+  for (size_t i = 0; i < new_table->size; i++) {
     assert(new_table->records[i] == i * 20);
   }
 
@@ -129,7 +129,7 @@ TestSSTable_get_value_loc()
   MemTable_free(memtable);
 
   // Test reading the valid keys.
-  for (int i = 0; i < table->size; i++) {
+  for (size_t i = 0; i < table->size; i++) {
     unsigned char key[4];
     key[0] = (i >> 24) & 0xFF;
     key[1] = (i >> 16) & 0xFF;
@@ -138,7 +138,7 @@ TestSSTable_get_value_loc()
 
     int64_t value_loc = SSTable_get_value_loc(table, (char*)&key, 4);
 
-    assert(value_loc == i * 128);
+    assert((size_t)value_loc == i * 128);
   }
 
   // Test reading an invalid key.
@@ -178,7 +178,7 @@ TestSSTable_in_key_range()
   MemTable_free(memtable);
 
   // Test in key range of valid keys
-  for (int i = 0; i < table->size; i++) {
+  for (size_t i = 0; i < table->size; i++) {
     unsigned char key[4];
     key[0] = (i >> 24) & 0xFF;
     key[1] = (i >> 16) & 0xFF;

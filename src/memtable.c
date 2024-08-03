@@ -183,7 +183,7 @@ void
 MemTable_free(struct MemTable* memtable)
 {
   // Free the MemTableRecords and its char*
-  for (int i = 0; i < memtable->size; i++) {
+  for (size_t i = 0; i < memtable->size; i++) {
     free(memtable->records[i]->key);
     free(memtable->records[i]);
   }

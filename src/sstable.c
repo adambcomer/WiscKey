@@ -249,7 +249,7 @@ SSTable_new_from_memtable(char* path, struct MemTable* memtable)
     return NULL;
   }
 
-  for (int i = 0; i < memtable->size; i++) {
+  for (size_t i = 0; i < memtable->size; i++) {
     uint64_t key_len = memtable->records[i]->key_len;
     int64_t value_loc = memtable->records[i]->value_loc;
 

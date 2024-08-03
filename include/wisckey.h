@@ -17,6 +17,8 @@
 #ifndef WISCKEY_H
 #define WISCKEY_H
 
+#include <stdlib.h>
+
 struct WiscKeyDB;
 
 struct WiscKeyDB*
