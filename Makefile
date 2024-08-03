@@ -1,6 +1,9 @@
-.PHONY: init test format format.check docs docs.deploy clean
+.PHONY: init init.release build test format format.check docs docs.deploy clean
 init:
-	meson setup build --warnlevel=2 --wipe
+	meson setup build --warnlevel=2 --wipe --werror
+
+init.release:
+	meson setup build --warnlevel=2 --wipe --werror --buildtype release
 
 build:
 	meson compile -C build
