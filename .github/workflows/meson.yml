@@ -17,7 +17,6 @@ jobs:
     - name: Dependencies
       run: |
         sudo apt-get install ninja-build
-        sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
         pip install meson
 
     - name: Setup
