@@ -161,6 +161,7 @@ SSTable_new(char* path)
     size_t file_res = fread(&key_len, sizeof(uint64_t), 1, table->file);
     if (file_res != 1) {
       perror("fread");
+      free(table);
       return NULL;
     }
 
@@ -169,6 +170,7 @@ SSTable_new(char* path)
     file_res = fseeko(table->file, (long long)next, SEEK_CUR);
     if (file_res != 0) {
       perror("fread");
+      free(table);
       return NULL;
     }
 
@@ -177,9 +179,13 @@ SSTable_new(char* path)
     curr_offset += next + sizeof(uint64_t);
   }
 
-  int seek_res = fseeko(table->file, (long long)table->records[0], SEEK_SET);
+  int seek_res = fseeko( // NOLINT(clang-analyzer-core.CallAndMessage)
+    table->file,
+    (long long)table->records[0],
+    SEEK_SET);
   if (seek_res == -1) {
     perror("fseeko");
+    free(table);
     return NULL;
   }
 
@@ -187,6 +193,7 @@ SSTable_new(char* path)
   size_t file_res = fread(&low_key_len, sizeof(uint64_t), 1, table->file);
   if (file_res != 1) {
     perror("fread");
+    free(table);
     return NULL;
   }
 
@@ -194,6 +201,7 @@ SSTable_new(char* path)
   file_res = fread(&val_loc, sizeof(int64_t), 1, table->file);
   if (file_res != 1) {
     perror("fread");
+    free(table);
     return NULL;
   }
 
@@ -201,6 +209,8 @@ SSTable_new(char* path)
   file_res = fread(low_key, sizeof(char), low_key_len, table->file);
   if (file_res != low_key_len) {
     perror("fread");
+    free(table);
+    free(low_key);
     return NULL;
   }
 
@@ -211,6 +221,8 @@ SSTable_new(char* path)
     fseeko(table->file, (long long)table->records[table->size - 1], SEEK_SET);
   if (seek_res == -1) {
     perror("fseeko");
+    free(table);
+    free(low_key);
     return NULL;
   }
 
@@ -218,12 +230,16 @@ SSTable_new(char* path)
   file_res = fread(&high_key_len, sizeof(uint64_t), 1, table->file);
   if (file_res != 1) {
     perror("fread");
+    free(table);
+    free(low_key);
     return NULL;
   }
 
   file_res = fread(&val_loc, sizeof(int64_t), 1, table->file);
   if (file_res != 1) {
     perror("fread");
+    free(table);
+    free(low_key);
     return NULL;
   }
 
@@ -231,6 +247,9 @@ SSTable_new(char* path)
   file_res = fread(high_key, sizeof(char), high_key_len, table->file);
   if (file_res != high_key_len) {
     perror("fread");
+    free(table);
+    free(low_key);
+    free(high_key);
     return NULL;
   }
 
@@ -308,7 +327,11 @@ SSTable_get_value_loc(struct SSTable* table, char* key, size_t key_len)
     int m = a + (b - a) / 2;
 
     struct SSTableRecord record;
-    SSTableRecord_read(table, &record, table->records[m]);
+    int res = SSTableRecord_read(table, &record, table->records[m]);
+    if (res == -1) {
+      perror("Error reading record from SSTable");
+      return -1;
+    }
 
     int cmp = SSTable_key_cmp(&record, key, key_len);
     free(record.key);

@@ -1,4 +1,4 @@
-.PHONY: init init.release build test format format.check docs docs.deploy clean
+.PHONY: init init.release build test format format.check lint lint.check docs docs.deploy clean
 init:
 	meson setup build --warnlevel=2 --wipe --werror
 
@@ -16,6 +16,12 @@ format:
 
 format.check:
 	ninja -C build clang-format-check
+
+lint:
+	ninja -C build clang-tidy-fix
+
+lint.check:
+	ninja -C build clang-tidy
 
 docs:
 	doxygen 
