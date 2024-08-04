@@ -25,6 +25,9 @@ jobs:
     - name: Clang-Format Check 
       run: make format.check 
 
+    - name: Clang-Tidy Check 
+      run: make lint.check 
+
     - name: Build
       run: make build 
 
