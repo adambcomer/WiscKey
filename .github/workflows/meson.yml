@@ -16,7 +16,7 @@ jobs:
 
     - name: Dependencies
       run: |
-        sudo apt-get install ninja-build
+        sudo apt-get install ninja-build clang-format clang-tidy
         pip install meson
 
     - name: Setup
