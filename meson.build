@@ -3,7 +3,7 @@ project('WiscKey', 'c', default_options : ['c_std=gnu17'])
 ### Library ###
 include = include_directories('include')
 
-lib = library('wisckey', ['src/wisckey.c', 'src/memtable.c', 'src/wal.c', 'src/sstable.c', 'src/value_log.c'], include_directories : include, version : '1.0.0', soversion : '1')
+lib = library('wisckey', ['src/wisckey.c', 'src/common.c', 'src/memtable.c', 'src/wal.c', 'src/sstable.c', 'src/value_log.c'], include_directories : include, version : '1.0.0', soversion : '1')
 
 ### Tests ###
 memtable_test = executable('memtable_test', 'tests/memtable_test.c', link_with : lib, include_directories : include)
